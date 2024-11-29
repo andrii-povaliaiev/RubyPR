@@ -1,1 +1,55 @@
+# Клас для конвертації виразів у RPN
+class InfixToRPN
+  # Пріоритет операторів
+  OPERATOR_PRECEDENCE = {
+    "+" => 1,
+    "-" => 1,
+    "*" => 2,
+    "/" => 2,
+    "^" => 3
+  }
+
+  # Метод перевіряє, чи є символ оператором
+  def self.operator?(char)
+    OPERATOR_PRECEDENCE.key?(char)
+  end
+
+  # Метод конвертації інфіксного виразу в RPN
+  def self.convert_to_rpn(expression)
+    output = []        # Список для результату
+    operators = []     # Список для операторів
+
+    # Розбиваємо вираз на токени (числа, оператори, дужки)
+    tokens = expression.scan(/\d+|[+\-\*\/\^()]/)
+
+    tokens.each do |token|
+      if token.match?(/\d+/) # Якщо токен - число, додаємо до виходу
+        output << token
+      elsif operator?(token) # Якщо токен - оператор
+        while operators.any? && operator?(operators.last) &&
+              OPERATOR_PRECEDENCE[operators.last] >= OPERATOR_PRECEDENCE[token]
+          output << operators.pop
+        end
+        operators << token
+      elsif token == "(" # Якщо токен - відкрита дужка
+        operators << token
+      elsif token == ")" # Якщо токен - закрита дужка
+        while operators.any? && operators.last != "("
+          output << operators.pop
+        end
+        operators.pop # Видаляємо відкриту дужку
+      end
+    end
+
+    # Додаємо залишкові оператори
+    output.concat(operators.reverse)
+    output.join(" ") # Об'єднуємо масив у рядок
+  end
+end
+
+# Тестовий приклад
+puts "Введіть математичний вираз (наприклад, '2 + 1 * 4'):"
+input = gets.chomp
+result = InfixToRPN.convert_to_rpn(input)
+puts "RPN-нотація: #{result}"
 
