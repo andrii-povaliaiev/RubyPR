@@ -1,0 +1,39 @@
+def get_user_choice
+
+  puts "Виберіть: камінь, ножиці або папір"
+  user_choice = gets.chomp.downcase # Зчитуємо ввід користувача і переводимо в нижній регістр
+  
+  until ["камінь", "ножиці", "папір"].include?(user_choice)
+    puts "Неправильний вибір. Виберіть: камінь, ножиці або папір"
+    user_choice = gets.chomp.downcase
+  end
+  
+  user_choice # Повертаємо правильний вибір користувача
+end
+
+def get_computer_choice
+  ["камінь", "ножиці", "папір"].sample # Випадковий вибір із трьох варіантів
+end
+
+def determine_winner(user_choice, computer_choice)
+  # Якщо вибори співпали — нічия
+  if user_choice == computer_choice
+    "Нічия!"
+  
+  elsif (user_choice == "камінь" && computer_choice == "ножиці") ||
+        (user_choice == "ножиці" && computer_choice == "папір") ||
+        (user_choice == "папір" && computer_choice == "камінь")
+    "Ви виграли!"
+  
+  else
+    "Ви програли!"
+  end
+end
+
+user_choice = get_user_choice
+
+computer_choice = get_computer_choice
+
+puts "Ваш вибір: #{user_choice}"
+puts "Вибір комп'ютера: #{computer_choice}"
+puts determine_winner(user_choice, computer_choice)
