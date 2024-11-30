@@ -1,0 +1,80 @@
+# Функція для пошуку родзинок у пирозі
+def find_raisins(cake)
+  raisins = []
+  cake.each_with_index do |row, row_idx|
+    row.chars.each_with_index do |cell, col_idx|
+      raisins << [row_idx, col_idx] if cell == 'o'
+    end
+  end
+  raisins
+end
+
+# Функція для розрізання пирога на шматочки
+def slice_cake(cake, raisins, total_pieces)
+  slices = []
+  prev_row = 0
+
+  # Кількість рядів
+  total_rows = cake.size
+
+  # Рахуємо, скільки родзинок
+  num_raisins = raisins.size
+
+  # Мінімум стільки рядів в одному шматку
+  rows_per_piece = total_rows / total_pieces
+
+  # Проходимо по родзинках і ділимо пиріг
+  raisins.each_with_index do |(row, col), idx|
+    next_row = [prev_row + rows_per_piece, total_rows].min
+    next_row = [next_row, raisins[idx + 1][0]].min if idx < num_raisins - 1
+    slices << cake[prev_row...next_row]
+    prev_row = next_row
+  end
+
+  # Якщо залишилися ще ряди після останньої родзинки
+  slices << cake[prev_row..-1] if prev_row < cake.size
+
+  slices
+end
+
+# Основна функція для обробки пирога
+def cut_cake(cake, total_pieces)
+  # Розбиваємо рядки торта на масив рядків
+  cake_lines = cake.split("\n")
+  
+  # Знаходимо координати родзинок
+  raisins = find_raisins(cake_lines)
+
+  # Розрізаємо торт на шматочки
+  result = slice_cake(cake_lines, raisins, total_pieces)
+
+  result
+end
+
+# Приклад торта
+cake = <<~CAKE
+  ........
+  ..o.....
+  ...o....
+  ........
+  .......o
+  ........
+CAKE
+
+# Встановлюємо кількість шматочків
+total_pieces = 4
+
+# Викликаємо функцію і отримуємо всі шматочки
+result = cut_cake(cake, total_pieces)
+
+# Запитуємо у користувача, який шматок він хоче побачити
+puts "Всього шматочків: #{result.size}. Який шматок ви хочете побачити?"
+chosen_piece = gets.to_i
+
+# Перевіряємо, чи введений шматок існує
+if chosen_piece >= 1 && chosen_piece <= result.size
+  puts "Шматок #{chosen_piece}:"
+  puts result[chosen_piece - 1].join("\n")
+else
+  puts "Неправильний номер шматка!"
+end
